@@ -49,8 +49,8 @@ ok "admin: save settings" "$(code -b $T/adm --data "$F" $B/admin/settings)" 200
 ok "effect: PDF disabled -> 403" "$(code $B/pdf/en.pdf)" 403
 ok "effect: qr block off -> qr cookie no longer flags" "$(curl -s -b $T/qr $B/ | grep -o '"qr":false' | wc -l)" 1
 ok "effect: th hidden" "$(curl -s $B/ | grep -c '"th":{')" 0
-ok "effect: new office phone shown" "$(curl -s $B/ | grep -c '+82 51 000 1111')" 1
-ok "effect: new hours (en)" "$(curl -s $B/ | grep -o '09:00–20:00"' | head -1)" '09:00–20:00"'
+ok "effect: new office phone shown" "$(curl -s $B/ | grep -q '+82 51 000 1111' && echo yes)" yes
+ok "effect: new hours (en)" "$(curl -s $B/ | grep -q '09:00–20:00' && echo yes)" yes
 ok "effect: QR target uses public URL" "$(curl -s -b $T/adm $B/admin | grep -o 'https://guide.example.com/?src=qr' | head -1)" "https://guide.example.com/?src=qr"
 # restore defaults
 F="csrf=$CSRF&pdf=1&install=1&lang_en=1&lang_ja=1&lang_zh-CN=1&lang_zh-TW=1&lang_vi=1&lang_th=1&lang_ru=1&officePhone=%2B82 51 293 8000&officeHours=08:00–21:00&csPhone=%2B82-2-797-8000&csHours=08:30–21:00&emPhone=1588-1230&publicUrl="

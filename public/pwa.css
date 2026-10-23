@@ -6,3 +6,14 @@ img.logo{padding:0;background:none}
 .pdf-others a{color:var(--mut)}
 .hint{max-width:828px;margin:10px auto 0;padding:10px 14px;background:var(--soft);border:1px solid #f3c7c2;border-radius:10px;font-size:14px}
 @media (max-width:600px){.hint{margin:10px 16px 0}}
+
+/* Language switcher without JavaScript: checked radio -> visible panel + highlighted label */
+.lr{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none}
+.lp{display:none}
+#L-en:checked~main #P-en{display:block}#L-en:checked~header label[for="L-en"]{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}#L-en:focus-visible~header label[for="L-en"]{outline:2px solid var(--ink);outline-offset:2px}
+#L-ja:checked~main #P-ja{display:block}#L-ja:checked~header label[for="L-ja"]{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}#L-ja:focus-visible~header label[for="L-ja"]{outline:2px solid var(--ink);outline-offset:2px}
+#L-zh-CN:checked~main #P-zh-CN{display:block}#L-zh-CN:checked~header label[for="L-zh-CN"]{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}#L-zh-CN:focus-visible~header label[for="L-zh-CN"]{outline:2px solid var(--ink);outline-offset:2px}
+#L-zh-TW:checked~main #P-zh-TW{display:block}#L-zh-TW:checked~header label[for="L-zh-TW"]{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}#L-zh-TW:focus-visible~header label[for="L-zh-TW"]{outline:2px solid var(--ink);outline-offset:2px}
+#L-vi:checked~main #P-vi{display:block}#L-vi:checked~header label[for="L-vi"]{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}#L-vi:focus-visible~header label[for="L-vi"]{outline:2px solid var(--ink);outline-offset:2px}
+#L-th:checked~main #P-th{display:block}#L-th:checked~header label[for="L-th"]{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}#L-th:focus-visible~header label[for="L-th"]{outline:2px solid var(--ink);outline-offset:2px}
+#L-ru:checked~main #P-ru{display:block}#L-ru:checked~header label[for="L-ru"]{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}#L-ru:focus-visible~header label[for="L-ru"]{outline:2px solid var(--ink);outline-offset:2px}

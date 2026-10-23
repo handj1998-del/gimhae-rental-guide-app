@@ -148,16 +148,23 @@ function noteFail(ip) {
 setInterval(() => { const now = Date.now(); for (const [k, s] of sessions) if (s.exp < now) sessions.delete(k); for (const [k, a] of attempts) if (now - a.first > WINDOW && a.lockUntil < now) attempts.delete(k); }, 60000).unref();
 
 // ---------- guide page ----------
-function guidePage(req) {
+// All enabled languages are rendered on the server; switching is radio + label + CSS (works even if
+// JavaScript is blocked, fails, or an old script is cached). app.js only adds install/PDF buttons and memory.
+const { panel } = require("./lib/render.js");
+const ASSET_V = crypto.createHash("sha256").update(["app.js", "style.css", "pwa.css", "sw.js"].map((f) => fs.readFileSync(path.join(ROOT, "public", f))).join("|")).digest("hex").slice(0, 10);
+function guidePage(req, url) {
   const qr = isQrSession(req);
   const langs = enabledLangs();
   const install = settings.install && !qr;
   const pdf = settings.pdf && !qr;
-  const data = {}; for (const k of langs) data[k] = LIVE[k];
+  const names = {}; for (const k of langs) names[k] = { name: LIVE[k].name, htmlLang: LIVE[k].htmlLang || k };
   const cfg = { qr, install, pdf, langs, pdfLangs: pdf ? langs : [] };
-  const json = JSON.stringify({ cfg, data }).replace(/</g, "\\u003c");
+  const json = JSON.stringify({ cfg, names }).replace(/</g, "\\u003c");
+  const ql = url && url.searchParams.get("lang");
+  const first = langs.includes(ql) ? ql : langs.includes("en") ? "en" : langs[0];
+  const v = "?v=" + ASSET_V;
   return `<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
+<html lang="${esc(names[first].htmlLang)}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#da291c">
 <title>LOTTE rent-a-car Gimhae Airport – Rental Guide</title>
@@ -167,15 +174,18 @@ ${install ? `<link rel="manifest" href="/manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Gimhae Guide">` : ""}
-<link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/pwa.css">
+<link rel="stylesheet" href="/style.css${v}"><link rel="stylesheet" href="/pwa.css${v}">
 </head><body${qr ? ' class="qr"' : ""}>
-<header class="top"><div class="bar"><div class="brand"><img class="logo" src="/icons/icon-192.png" alt=""><div><div class="kicker">LOTTE rent-a-car</div><h1 id="title"></h1></div></div>
-<nav class="langs" id="langs" aria-label="Language"></nav></div></header>
+${langs.map((k) => `<input type="radio" class="lr" name="lang" id="L-${k}" value="${k}"${k === first ? " checked" : ""} aria-label="${esc(names[k].name)}">`).join("\n")}
+<header class="top"><div class="bar"><div class="brand"><img class="logo" src="/icons/icon-192.png" alt=""><div><div class="kicker">LOTTE rent-a-car</div><h1 id="title">${esc((LIVE.en || LIVE[first]).title)}</h1></div></div>
+<nav class="langs" id="langs" aria-label="Language">${langs.length > 1 ? langs.map((k) => `<label for="L-${k}" data-k="${k}" lang="${esc(names[k].htmlLang)}">${esc(names[k].name)}</label>`).join("") : ""}</nav></div></header>
 <div class="actions" id="actions" hidden></div>
 <div class="hint" id="hint" hidden></div>
-<main id="main"></main>
+<main id="main">
+${langs.map((k) => panel(k, LIVE[k])).join("\n")}
+</main>
 <script type="application/json" id="boot">${json}</script>
-<script src="/app.js"></script>
+<script src="/app.js${v}"></script>
 </body></html>`;
 }
 
@@ -248,7 +258,7 @@ async function handle(req, res) {
   }
 
   if (req.method === "GET" && (p === "/" || p === "/index.html"))
-    return send(res, 200, guidePage(req), undefined, { "Cache-Control": "no-cache", Vary: "Cookie" });
+    return send(res, 200, guidePage(req, url), undefined, { "Cache-Control": "no-cache", Vary: "Cookie" });
 
   if (req.method === "GET" && p === "/manifest.webmanifest") {
     if (!settings.install || isQrSession(req)) return send(res, 404, "Not found", "text/plain", { "Cache-Control": "no-store", Vary: "Cookie" });

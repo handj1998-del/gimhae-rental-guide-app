@@ -14,7 +14,7 @@ html:lang(th) body{font-family:"Sarabun","Noto Sans Thai","Leelawadee UI","Thonb
 h1{margin:0;font-size:18px;line-height:1.3}
 .langs{display:flex;gap:6px;overflow-x:auto;padding:10px 0 4px;scrollbar-width:none}
 .langs::-webkit-scrollbar{display:none}
-.langs button{flex:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;font:inherit;font-size:14px;color:var(--ink);cursor:pointer}
+.langs button,.langs label{flex:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;font:inherit;font-size:14px;color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
 .langs button[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
 main{max-width:860px;margin:0 auto;padding:12px 12px 48px}
 .summary{color:var(--mut);margin:8px 4px 14px}
