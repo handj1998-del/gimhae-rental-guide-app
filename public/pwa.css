@@ -1,0 +1,8 @@
+img.logo{padding:0;background:none}
+.actions{max-width:860px;margin:12px auto 0;padding:0 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.act{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--red);color:var(--red);background:#fff;border-radius:999px;padding:8px 16px;font:inherit;font-weight:700;font-size:14px;text-decoration:none;cursor:pointer}
+.act.primary{background:var(--red);color:#fff}
+.pdf-others{font-size:13px;color:var(--mut);display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.pdf-others a{color:var(--mut)}
+.hint{max-width:828px;margin:10px auto 0;padding:10px 14px;background:var(--soft);border:1px solid #f3c7c2;border-radius:10px;font-size:14px}
+@media (max-width:600px){.hint{margin:10px 16px 0}}

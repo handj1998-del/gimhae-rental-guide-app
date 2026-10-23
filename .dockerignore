@@ -1,0 +1,6 @@
+node_modules
+ADMIN_PASSWORD.txt
+data/admin.json
+data/secret.key
+data/settings.json
+screenshots

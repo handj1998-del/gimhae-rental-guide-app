@@ -1,0 +1,13 @@
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:#f4f5f7;font:15px/1.5 "Noto Sans",Arial,sans-serif;color:#1d1d1f}
+.adm{max-width:640px;margin:24px auto;padding:20px;background:#fff;border:1px solid #e6e6ea;border-radius:14px}
+h1{font-size:20px;margin:0 0 14px}
+fieldset{border:1px solid #e6e6ea;border-radius:10px;margin:0 0 14px;padding:10px 14px}
+legend{font-weight:700;padding:0 6px}
+label{display:block;margin:8px 0}
+label.ck{display:flex;gap:8px;align-items:flex-start}
+input:not([type=checkbox]){display:block;width:100%;margin-top:4px;padding:8px 10px;border:1px solid #ccc;border-radius:8px;font:inherit}
+button,.btn{background:#da291c;color:#fff;border:0;border-radius:999px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+button.sec{background:#5f6368;margin-top:10px}
+.err{color:#b00020;font-weight:700}.ok{color:#137333;font-weight:700}
+.small{font-size:13px;color:#5f6368;word-break:break-all}

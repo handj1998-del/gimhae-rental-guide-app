@@ -1,0 +1,10 @@
+{
+  "name": "gimhae-rental-guide",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LOTTE rent-a-car Gimhae Airport – Rental Guide (7-language installable web app)",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" },
+  "dependencies": { "qrcode": "^1.5.4" }
+}
