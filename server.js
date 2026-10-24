@@ -11,7 +11,7 @@ const PORT = parseInt(process.env.PORT || "8080", 10);
 const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, "data");
 const TRUST_PROXY = process.env.TRUST_PROXY === "1";
 const FORCE_SECURE = process.env.COOKIE_SECURE === "1";
-const ORDER = ["en", "ja", "zh-CN", "zh-TW", "vi", "th", "ru"];
+const ORDER = ["en", "ja", "zh-CN", "zh-TW", "vi", "th", "ru", "ko"];
 const GUIDE = JSON.parse(fs.readFileSync(path.join(ROOT, "data", "guide.json"), "utf8"));
 const SETTINGS_FILE = path.join(DATA_DIR, "settings.json");
 const ADMIN_FILE = path.join(DATA_DIR, "admin.json");

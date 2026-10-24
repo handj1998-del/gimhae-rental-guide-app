@@ -4,7 +4,7 @@ B=${1:-http://localhost:8080}; T=$(mktemp -d); pass=0; fail=0
 ok(){ if [ "$2" = "$3" ]; then echo "PASS  $1 ($2)"; pass=$((pass+1)); else echo "FAIL  $1 (got $2, want $3)"; fail=$((fail+1)); fi; }
 code(){ curl -s -o /dev/null -w '%{http_code}' "$@"; }
 # Settings default to QR blocking OFF. Admin login first, then turn blocking ON for the QR tests (restored to OFF at the end)
-ALL="install=1&lang_en=1&lang_ja=1&lang_zh-CN=1&lang_zh-TW=1&lang_vi=1&lang_th=1&lang_ru=1&officePhone=%2B82 51 293 8000&officeHours=08:00–21:00&csPhone=%2B82-2-797-8000&csHours=08:30–21:00&emPhone=1588-1230&publicUrl="
+ALL="install=1&lang_en=1&lang_ja=1&lang_zh-CN=1&lang_zh-TW=1&lang_vi=1&lang_th=1&lang_ru=1&lang_ko=1&officePhone=%2B82 51 293 8000&officeHours=08:00–21:00&csPhone=%2B82-2-797-8000&csHours=08:30–21:00&emPhone=1588-1230&publicUrl="
 PW=$(head -n1 ADMIN_PASSWORD.txt); curl -s -o /dev/null -c $T/pre --data-urlencode "password=$PW" $B/admin/login; unset PW
 PCSRF=$(curl -s -b $T/pre $B/admin | grep -o 'name="csrf" value="[^"]*"' | head -1 | sed 's/.*value="//;s/"//')
 # QR session while blocking is OFF: install + PDF allowed
@@ -29,7 +29,7 @@ ok "qr: cfg qr=true install/pdf off" "$(curl -s -b $T/qr $B/ | grep -o '"cfg":{"
 ok "qr: no manifest link" "$(curl -s -b $T/qr $B/ | grep -c 'rel="manifest"')" 0
 ok "qr: manifest 404" "$(code -b $T/qr $B/manifest.webmanifest)" 404
 ok "qr: sw.js 404" "$(code -b $T/qr $B/sw.js)" 404
-for k in en ja zh-CN zh-TW vi th ru; do ok "qr: PDF $k refused" "$(code -b $T/qr $B/pdf/$k.pdf)" 403; done
+for k in en ja zh-CN zh-TW vi th ru ko; do ok "qr: PDF $k refused" "$(code -b $T/qr $B/pdf/$k.pdf)" 403; done
 ok "qr: forged cookie ignored" "$(code -b 'gg_qr=abc.def' $B/pdf/en.pdf)" 200
 # admin
 ok "admin: settings hidden without login" "$(curl -s $B/admin | grep -c 'name="csrf"')" 0
@@ -44,7 +44,7 @@ ok "admin: QR PNG" "$(curl -s -b $T/adm $B/admin/qr.png | head -c 4 | tail -c 3)
 CSRF=$(curl -s -b $T/adm $B/admin | grep -o 'name="csrf" value="[^"]*"' | head -1 | sed 's/.*value="//;s/"//')
 ok "admin: bad CSRF rejected" "$(code -b $T/adm -d 'csrf=x&pdf=1' $B/admin/settings)" 403
 # change: QR blocking off, PDF off, disable th, change office phone + hours
-F="csrf=$CSRF&install=1&lang_en=1&lang_ja=1&lang_zh-CN=1&lang_zh-TW=1&lang_vi=1&lang_ru=1&officePhone=%2B82 51 000 1111&officeHours=09:00-20:00&csPhone=%2B82-2-797-8000&csHours=08:30–21:00&emPhone=1588-1230&publicUrl=https://guide.example.com"
+F="csrf=$CSRF&install=1&lang_en=1&lang_ja=1&lang_zh-CN=1&lang_zh-TW=1&lang_vi=1&lang_ru=1&lang_ko=1&officePhone=%2B82 51 000 1111&officeHours=09:00-20:00&csPhone=%2B82-2-797-8000&csHours=08:30–21:00&emPhone=1588-1230&publicUrl=https://guide.example.com"
 ok "admin: save settings" "$(code -b $T/adm --data "$F" $B/admin/settings)" 200
 ok "effect: PDF disabled -> 403" "$(code $B/pdf/en.pdf)" 403
 ok "effect: qr block off -> qr cookie no longer flags" "$(curl -s -b $T/qr $B/ | grep -o '"qr":false' | wc -l)" 1
@@ -53,7 +53,7 @@ ok "effect: new office phone shown" "$(curl -s $B/ | grep -q '+82 51 000 1111' &
 ok "effect: new hours (en)" "$(curl -s $B/ | grep -q '09:00–20:00' && echo yes)" yes
 ok "effect: QR target uses public URL" "$(curl -s -b $T/adm $B/admin | grep -o 'https://guide.example.com/?src=qr' | head -1)" "https://guide.example.com/?src=qr"
 # restore defaults
-F="csrf=$CSRF&pdf=1&install=1&lang_en=1&lang_ja=1&lang_zh-CN=1&lang_zh-TW=1&lang_vi=1&lang_th=1&lang_ru=1&officePhone=%2B82 51 293 8000&officeHours=08:00–21:00&csPhone=%2B82-2-797-8000&csHours=08:30–21:00&emPhone=1588-1230&publicUrl="
+F="csrf=$CSRF&pdf=1&install=1&lang_en=1&lang_ja=1&lang_zh-CN=1&lang_zh-TW=1&lang_vi=1&lang_th=1&lang_ru=1&lang_ko=1&officePhone=%2B82 51 293 8000&officeHours=08:00–21:00&csPhone=%2B82-2-797-8000&csHours=08:30–21:00&emPhone=1588-1230&publicUrl="
 ok "admin: restore defaults (QR blocking OFF)" "$(code -b $T/adm --data "$F" $B/admin/settings)" 200
 ok "restored: PDF on" "$(code $B/pdf/th.pdf)" 200
 ok "restored: QR blocking off (qr PDF 200)" "$(code -b $T/qr $B/pdf/en.pdf)" 200

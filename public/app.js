@@ -11,7 +11,8 @@
     "zh-TW": { install: "安裝應用程式", pdf: "下載 PDF", ios: "安裝方式：點選「分享」按鈕，再選擇「加入主畫面」。", other: "安裝方式：開啟瀏覽器選單，選擇「安裝應用程式」或「加到主畫面」。", done: "應用程式已安裝。" },
     "vi": { install: "Cài đặt ứng dụng", pdf: "Tải PDF", ios: "Cách cài đặt: nhấn nút Chia sẻ, rồi chọn “Thêm vào MH chính”.", other: "Cách cài đặt: mở menu trình duyệt và chọn “Cài đặt ứng dụng” hoặc “Thêm vào màn hình chính”.", done: "Đã cài đặt ứng dụng." },
     "th": { install: "ติดตั้งแอป", pdf: "ดาวน์โหลด PDF", ios: "วิธีติดตั้ง: แตะปุ่มแชร์ แล้วเลือก “เพิ่มไปยังหน้าจอโฮม”", other: "วิธีติดตั้ง: เปิดเมนูของเบราว์เซอร์ แล้วเลือก “ติดตั้งแอป” หรือ “เพิ่มลงในหน้าจอหลัก”", done: "ติดตั้งแอปแล้ว" },
-    "ru": { install: "Установить приложение", pdf: "Скачать PDF", ios: "Как установить: нажмите «Поделиться», затем «На экран „Домой“».", other: "Как установить: откройте меню браузера и выберите «Установить приложение» или «Добавить на главный экран».", done: "Приложение установлено." }
+    "ru": { install: "Установить приложение", pdf: "Скачать PDF", ios: "Как установить: нажмите «Поделиться», затем «На экран „Домой“».", other: "Как установить: откройте меню браузера и выберите «Установить приложение» или «Добавить на главный экран».", done: "Приложение установлено." },
+    "ko": { install: "앱 설치", pdf: "PDF 다운로드", ios: "설치 방법: 공유 버튼을 누른 다음 “홈 화면에 추가”를 선택하세요.", other: "설치 방법: 브라우저 메뉴를 열고 “앱 설치” 또는 “홈 화면에 추가”를 선택하세요.", done: "앱이 설치되었습니다." }
   };
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function standalone() { try { return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true; } catch (e) { return false; } }
@@ -65,7 +66,7 @@
   var saved = null; try { saved = localStorage.getItem("gimhae_lang"); } catch (e) {}
   var ks = []; for (var j = 0; j < radios.length; j++) ks.push(radios[j].value);
   var nl = navigator.language || "en";
-  var guess = ks.filter(function (k) { return k.toLowerCase() === nl.toLowerCase(); })[0] || ks.filter(function (k) { return k.split("-")[0] === nl.split("-")[0] && k !== "zh-TW"; })[0] || (ks.indexOf("en") >= 0 ? "en" : ks[0]);
+  var guess = ks.filter(function (k) { return k !== "ko" && k.toLowerCase() === nl.toLowerCase(); })[0] || ks.filter(function (k) { return k.split("-")[0] === nl.split("-")[0] && k !== "zh-TW" && k !== "ko"; })[0] || (ks.indexOf("en") >= 0 ? "en" : ks[0]);
   var checked = document.querySelector("input.lr:checked");
   // Browsers may restore a radio the user picked before (back/forward); respect it.
   apply(radio(q) ? q : radio(saved) ? saved : (checked && checked.value !== ks[0]) ? checked.value : guess, false);

@@ -1,6 +1,6 @@
 # LOTTE rent-a-car Gimhae Airport – Rental Guide (installable web app)
 
-7-language guide (en, ja, zh-CN, zh-TW, vi, th, ru) as an installable PWA with an admin settings page.
+8-language guide (en, ja, zh-CN, zh-TW, vi, th, ru, ko) as an installable PWA with an admin settings page.
 Node.js >= 18, one dependency (`qrcode`).
 
 ## Run locally
