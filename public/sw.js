@@ -1,6 +1,6 @@
 /* Offline support. v2: network-first for pages AND assets, so phones always get updates when online;
    the cache is only a fallback when offline. Admin, PDFs and the manifest are never cached. */
-const CACHE = "gimhae-guide-v3";
+const CACHE = "gimhae-guide-v4";
 const CORE = ["/", "/app.js", "/style.css", "/pwa.css", "/icons/icon-192.png", "/icons/favicon-32.png"];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE.map((u) => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting())); });
 self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });

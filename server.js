@@ -54,25 +54,24 @@ const DEFAULTS = {
   qrBlock: false, pdf: true, install: true,
   langs: Object.fromEntries(ORDER.map((k) => [k, true])),
   officePhone: "+82 51 293 8000", officeHours: "08:00–21:00",
-  csPhone: "+82-2-797-8000", csHours: "08:30–21:00",
   emPhone: "1588-1230",
   publicUrl: (process.env.PUBLIC_URL || "").trim().replace(/\/+$/, ""), // optional env default (survives restarts on hosts without a disk)
 };
 let settings = { ...DEFAULTS, langs: { ...DEFAULTS.langs } };
-try { const s = JSON.parse(fs.readFileSync(SETTINGS_FILE, "utf8")); settings = { ...settings, ...s, langs: { ...settings.langs, ...(s.langs || {}) } }; } catch (e) {}
+try { const s = JSON.parse(fs.readFileSync(SETTINGS_FILE, "utf8")); delete s.csPhone; delete s.csHours; settings = { ...settings, ...s, langs: { ...settings.langs, ...(s.langs || {}) } }; } catch (e) {}
 function saveSettings() { fs.writeFileSync(SETTINGS_FILE + ".tmp", JSON.stringify(settings, null, 2)); fs.renameSync(SETTINGS_FILE + ".tmp", SETTINGS_FILE); rebuildGuide(); }
 const enabledLangs = () => { const l = ORDER.filter((k) => settings.langs[k]); return l.length ? l : ["en"]; };
 
 // Apply admin-edited phones/hours to every language
 let LIVE = GUIDE;
 function rebuildGuide() {
-  const reps = [[DEFAULTS.officePhone, settings.officePhone], [DEFAULTS.csPhone, settings.csPhone], [DEFAULTS.emPhone, settings.emPhone]].filter(([a, b]) => a !== b);
+  const reps = [[DEFAULTS.officePhone, settings.officePhone], [DEFAULTS.emPhone, settings.emPhone]].filter(([a, b]) => a !== b);
   const walk = (v) => typeof v === "string" ? reps.reduce((s, [a, b]) => s.split(a).join(b), v) : Array.isArray(v) ? v.map(walk) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)])) : v;
   const out = {};
   for (const k of ORDER) {
     const d = walk(GUIDE[k]);
-    const rows = d.secs[0].b[0].r; // office contact table: [office, customer support, emergency]
-    // Office row ends with a duration in brackets, e.g. "(13 hours)": drop it when hours change. Support row keeps "(Mon–Fri)".
+    const rows = d.secs[0].b[0].r; // office contact table: [office, emergency]
+    // Office row ends with a duration in brackets, e.g. "(13 hours)": drop it when hours change.
     const setHours = (row, def, val, dropDuration) => {
       if (def === val) return;
       const [a, b] = val.split("–");
@@ -80,7 +79,6 @@ function rebuildGuide() {
       if (dropDuration) row[1] = row[1].replace(/\s*[（(][^（()）]*[）)]\s*$/, "");
     };
     setHours(rows[0], DEFAULTS.officeHours, settings.officeHours, true);
-    setHours(rows[1], DEFAULTS.csHours, settings.csHours, false);
     out[k] = d;
   }
   LIVE = out;
@@ -216,8 +214,6 @@ ${chk("install", settings.install, "Allow app install (normal visitors)")}
 <fieldset><legend>Office details shown in the guide</legend>
 ${inp("officePhone", "Gimhae Airport Office phone", settings.officePhone)}
 ${inp("officeHours", "Gimhae Airport Office hours (HH:MM–HH:MM)", settings.officeHours)}
-${inp("csPhone", "Customer Support phone", settings.csPhone)}
-${inp("csHours", "Customer Support hours (HH:MM–HH:MM)", settings.csHours)}
 ${inp("emPhone", "Emergency phone (24 h)", settings.emPhone)}
 </fieldset>
 <fieldset><legend>QR code</legend>
@@ -330,8 +326,6 @@ async function handle(req, res) {
           langs: Object.fromEntries(ORDER.map((k) => [k, body["lang_" + k] === "1"])),
           officePhone: phone(body.officePhone, settings.officePhone, "Office phone"),
           officeHours: hours(body.officeHours, settings.officeHours, "Office hours"),
-          csPhone: phone(body.csPhone, settings.csPhone, "Customer Support phone"),
-          csHours: hours(body.csHours, settings.csHours, "Customer Support hours"),
           emPhone: phone(body.emPhone, settings.emPhone, "Emergency phone"),
           publicUrl: pub,
         };
